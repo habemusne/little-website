@@ -139,7 +139,7 @@ export default {
       projects: [{
         title: 'Fred: Distributed Crawling and Data Ingestion Tool',
         tech_tags: ['AWS EB', 'AWS SQS', 'AWS ECS', 'AWS S3', 'AWS VPC', 'SQL Server', 'Postgres', 'Django', 'VueJS', 'Docker'],
-        intro_content: '(Video project Ready By 2017/12/15)',
+        intro_content: '(Video demo Ready By 2017/12/15)',
         intro_type: 'coming_soon',
         company: 'Myers Media Group LLC',
         roles: ['Solo'],
@@ -154,8 +154,8 @@ export default {
       }, {
         title: 'Rainbow: Multi-source, Multi-destination ETL Tool',
         tech_tags: ['AWS Lambda', 'AWS SimpleWorkflow', 'Docker', 'Vagrant', 'Pandas', 'Django', 'Scrapy', 'Postgres'],
-        intro_content: null,
-        intro_type: 'text',
+        intro_content: '(Video demo Ready By 2017/12/15)',
+        intro_type: 'coming_soon',
         company: 'Myers Media Group LLC',
         roles: ['Solo'],
         supervised_by_architech: true,
@@ -214,7 +214,7 @@ export default {
       }, {
         title: 'AI Book Content Editor: Tree Structure Content Editor',
         tech_tags: ['VueJS', 'Docker', 'Swagger', 'NodeJS', 'Sequelize', 'Postgres'],
-        intro_content: 'https://www.youtube.com/embed/pHB56_-JOoY?rel=0',
+        intro_content: 'https://www.youtube.com/embed/wzi2jkKGuhw',
         intro_type: 'youtube',
         company: 'AI Master Inc.',
         roles: ['Solo'],
