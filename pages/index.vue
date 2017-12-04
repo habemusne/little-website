@@ -311,14 +311,14 @@ export default {
         name: 'percentage_feature_responsible',
         human_readable: '% Features Responsible',
         filter_function: project => {
-          return project.percentage_feature_responsible > this.applied_filters.percentage_feature_responsible[0] && project.percentage_feature_responsible < this.applied_filters.percentage_feature_responsible[1]
+          return project.percentage_feature_responsible >= this.applied_filters.percentage_feature_responsible[0] && project.percentage_feature_responsible <= this.applied_filters.percentage_feature_responsible[1]
         },
       }, {
         type: 'progress',
         name: 'percentage_code_contribution',
         human_readable: '% Code Contribution',
         filter_function: project => {
-          return project.percentage_code_contribution > this.applied_filters.percentage_code_contribution[0] && project.percentage_code_contribution < this.applied_filters.percentage_code_contribution[1]
+          return project.percentage_code_contribution >= this.applied_filters.percentage_code_contribution[0] && project.percentage_code_contribution <= this.applied_filters.percentage_code_contribution[1]
         },
       }]
     },
