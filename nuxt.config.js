@@ -38,5 +38,7 @@ module.exports = {
   build: {
     vendor: ['element-ui']
   },
-  plugins: ['~/plugins/element-ui'],
+  plugins: [
+    '~/plugins/element-ui',
+  ],
 }
