@@ -41,4 +41,7 @@ module.exports = {
   plugins: [
     '~/plugins/element-ui',
   ],
+  modules: [
+    'bootstrap-vue/nuxt',
+  ],
 }

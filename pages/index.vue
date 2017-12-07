@@ -1,17 +1,18 @@
 <template>
-<projects></projects>
+<div>
+  <span>Welcome!</span>
+  <br/>
+  <a href="#" @click="$router.push('/projects')">My Projects</a>
+  <br/>
+  <a href="https://github.com/habemusne/little-website" target="_blank">Github to this website</a>
+</div>
 </template>
 
 <script>
-import Projects from '~/components/Projects'
-
 export default {
-  head: {
-    script: [{ src: 'vis.min.js' }],
-    link: [{ rel: 'stylesheet', href: 'vis.min.css' }],
-  },
-  components: {
-    Projects,
-  },
+
 }
 </script>
+
+<style scoped>
+</style>

@@ -2,15 +2,26 @@
 <el-row>
   <el-col :span="16">
     <div style="width: 100%; min-height: 1px">
-      <el-card v-for="(project, i) in filtered_projects" :key="i">
+      <el-button type="danger" @click="show_timeline = !show_timeline">{{ `${show_timeline ? 'Hide' : 'Show'}` }} Timeline</el-button>
+      <br/><br/>
+      <el-card v-show="show_timeline">
+        <div ref="timeline"></div>
+      </el-card>
+      <el-card v-for="(project, i) in filtered_projects" :key="i" :id="project.name">
         <el-container>
-          <el-header>{{ project.title }}</el-header>
+          <el-header>{{ project.human_name }}: {{ project.short_desc }}</el-header>
           <el-main>
             <div class="project-content">
-              <p class="short-desc">{{ project.short_desc }}</p>
-              <iframe v-if="project.intro_type === 'youtube'" width="560" height="315" :src="project.intro_content" frameborder="0" allowfullscreen></iframe>
-              <p v-if="project.intro_type === 'text'">{{ project.intro_content }}</p>
-              <div v-if="project.intro_type === 'intro_large'" class="intro-large"><p v-html="project.intro_content"></p></div>
+              <p class="desc">{{ project.desc }}</p>
+              <div v-if="project.intro_type === 'youtube'">
+                <iframe width="560" height="315" :src="project.intro_content" frameborder="0" allowfullscreen></iframe>
+              </div>
+              <div v-else-if="project.intro_type === 'text'">
+                <div v-html="project.intro_content" class="intro-small"></div>
+              </div>
+              <div v-else-if="project.intro_type === 'intro_large'">
+                <div v-html="project.intro_content" class="intro-large"></div>
+              </div>
             </div>
           </el-main>
           <el-footer>
@@ -46,6 +57,13 @@
               <tr>
                 <td>Funded?</td>
                 <td>{{ project.funded ? 'Yes': 'No' }}</td>
+              </tr>
+              <tr>
+                <td>Code Repository</td>
+                <td v-if="project.code_repo.startsWith('http')">
+                  <a :href="project.code_repo" target="_blank">{{ project.code_repo }}</a>
+                </td>
+                <td v-else>{{ project.code_repo }}</td>
               </tr>
               <tr>
                 <td>Updated</td>
@@ -102,8 +120,26 @@ import projects from '~/helpers/projects'
 import { uniq, flatten, intersection } from 'lodash'
 
 export default {
+  mounted: function() {
+    const timeline_items = projects.map((project, id) => {
+      return {
+        id,
+        project,
+        start: project.active_start.split('/').join('-'),
+        end: project.active_end ? project.active_end.split('/').join('-') : null,
+        title: `${project.human_name}: ${project.short_desc}`,
+      }
+    })
+    const timeline_options = {
+      template: function(item, element, data) {
+        return `<a href="#${item.project.name}" class="timeline-item" style="text-decoration: none"><div>${item.project.human_name}</div></a>`
+      },
+    }
+    new vis.Timeline(this.$refs.timeline, timeline_items, timeline_options);
+  },
   data() {
     return {
+      show_timeline: false,
       opened_filters: [],
       applied_filters: {
         has_video_demo: '',
@@ -122,21 +158,25 @@ export default {
       },
       tech_categories: {
         'Computer Networking & Security': {
-          tech_tags: ['AWS EB', 'AWS SQS', 'AWS S3', 'AWS Lambda', 'AWS SimpleWorkflow', 'Aliyun', 'AWS VPC', 'JWT', 'AWS ECS', 'Docker', 'Vagrant'],
+          tech_tags: ['AWS EB', 'AWS SQS', 'AWS S3', 'AWS Lambda', 'AWS SimpleWorkflow', 'Aliyun', 'AWS VPC', 'jwt', 'AWS ECS', 'Docker', 'Vagrant', 'Wechat SDK', 'Passenger', 'pm2', 'nginx'],
           type: 'danger',
         },
         'Backend Framework & Database': {
-          tech_tags: ['Django', 'NodeJS', 'Swagger', 'SQL Server', 'Postgres', 'Knex', 'Sequelize', 'Bookshelf'],
+          tech_tags: ['Django', 'NodeJS', 'Swagger', 'SQL Server', 'Postgres', 'Knex', 'Sequelize', 'Bookshelf', 'MongoDB', 'Ruby on Rails', 'ActiveRecord'],
           type: 'default',
         },
         'Frontend': {
-          tech_tags: ['VueJS', 'ReactJS', 'GraphQL', 'Sass', 'Webpack'],
+          tech_tags: ['VueJS', 'ReactJS', 'GraphQL', 'Sass', 'Webpack', 'MeteorJS', 'Framework7', 'Selenium', 'AngularJS', 'JsPsych'],
           type: 'warning',
         },
         'Data Manipulation': {
-          tech_tags: ['Pandas', 'Scrapy'],
+          tech_tags: ['Pandas', 'Scrapy', 'Amazon Mechanical Turk', 'Numpy', 'Matlab'],
           type: 'success',
         },
+        'Language': {
+          tech_tags: ['Python', 'Bash', 'Javascript', 'php'],
+          type: 'info',
+        }
       },
       projects,
     }
@@ -292,12 +332,16 @@ export default {
   font-size: x-large;
   font-weight: bold;
   line-height: 60px;
+  height: auto !important;
 }
 .intro-large {
   font-size: 30px;
   font-weight: 100;
 }
-.short-desc {
+.intro-small {
+
+}
+.desc {
   font-weight: 100;
   font-style: italic;
   margin-bottom: 2rem;
@@ -311,5 +355,8 @@ export default {
 .el-slider {
   width: 90%;
   margin: auto;
+}
+.timeline-item {
+  font-size: 14px;
 }
 </style>

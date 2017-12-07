@@ -1,8 +1,27 @@
 <template>
   <div>
-    <nuxt/>
+    <nav-bar></nav-bar>
+    <el-container>
+      <el-main>
+        <nuxt/>
+      </el-main>
+    </el-container>
   </div>
 </template>
+
+<script>
+import NavBar from '~/components/Nav'
+
+export default {
+  head: {
+    script: [{ src: 'vis.min.js' }],
+    link: [{ rel: 'stylesheet', href: 'vis.min.css' }],
+  },
+  components: {
+    NavBar,
+  },
+}
+</script>
 
 <style>
 html {
@@ -15,6 +34,8 @@ html {
   -webkit-font-smoothing: antialiased;
   box-sizing: border-box;
 }
+
+button:focus {outline:0;}
 
 *, *:before, *:after {
   box-sizing: border-box;
