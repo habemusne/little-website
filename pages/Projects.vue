@@ -184,7 +184,7 @@ export default {
   computed: {
     filter_items() {
       return [{
-        type: 'switch',
+        type: 'select',
         multiple: false,
         name: 'has_video_demo',
         human_readable: 'Has Video Demo',
@@ -219,7 +219,7 @@ export default {
           return intersection(project.roles, this.applied_filters.roles).length > 0
         },
       }, {
-        type: 'switch',
+        type: 'select',
         multiple: false,
         name: 'supervised_by_architech',
         human_readable: 'Supervised by Architech',
