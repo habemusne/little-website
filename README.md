@@ -21,7 +21,7 @@ npm i pm2 -g
 npm run build
 
 # -s is to run spa mode
-# If you have concerns about browser incapability,
+# If you have concerns about browser incompatibility,
 #   you may want to remove this flag in order to use ssr.
 # Keep in mind that pm2 is resource demanding.
 # My t2.nano could not afford it so I opened up a screen and ran npm start -s instead.
