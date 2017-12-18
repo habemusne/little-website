@@ -20,7 +20,13 @@ npm i
 npm i pm2 -g
 npm run build
 
-# -s is to run spa mode. If you have concerns about browser incapability, you may want to remove this flag in order to use ssr. Keep in mind that pm2 is resource demanding. My t2.nano could not afford it so I opened up a screen and ran npm start -s instead. If you have a good machine you may use pm2 --- you can alleviate the worry of random failing of the running process
+# -s is to run spa mode
+# If you have concerns about browser incapability,
+#   you may want to remove this flag in order to use ssr.
+# Keep in mind that pm2 is resource demanding.
+# My t2.nano could not afford it so I opened up a screen and ran npm start -s instead.
+# If you have a good machine you may use pm2,
+#   so that you can alleviate the worry of random failing of the running process
 pm2 start npm --name "website" -- start -s
 ```
 
@@ -43,7 +49,10 @@ curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.31.0/install.sh | b
 nvm install 9.2.1
 
 # Install nginx and https
-# Please know that the code below is specifically for CentOS/RDHL Fedora. The certbot doesn't have updated installation doc for this distribution, and this is what I figured out myself. In other distributions, I believe certbot has more integrated solution.
+# Please know that the code below is specifically for CentOS/RDHL Fedora.
+# The certbot doesn't have updated installation doc for this distribution,
+#   and this is what I figured out myself.
+# In other distributions, I believe certbot has more integrated solution.
 sudo yum instal nginx
 edit /etc/nginx/nginx.conf to have my domain
 sudo chmod -R 777 /var/log/nginx/
