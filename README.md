@@ -1,50 +1,56 @@
-# hehe
+# What is this
 
-> Nuxt.js project
+This is a project demo website builder. It specializes in demonstraing a software developer's past and current projects, and probably there's nothing else it can do.
 
-## Build Setup
+For a software developer, this is extremely easy to use --- what you need to do is to only modify `static/project.json`. The difficult part is on setting up the server.
 
-``` bash
-# install dependencies
-$ npm install # Or yarn install
+Demo: https://habemusne.com
 
-# serve with hot reload at localhost:3000
-$ npm run dev
+# Usage
 
-# build for production and launch server
-$ npm run build
-$ npm start
+- First of all, have your own domain and your server ready. In my case, I bought the domain from GoDaddy.com and then I use AWS Route53 to setup the routing. There are plenty of articles on how to do it so I will not mention the procedure here. For example you may visit [this article](https://blog.vizuri.com/setting-up-godaddy-and-route53-with-ghost-blogger) for the procedure.
 
-# generate static project
-$ npm run generate
+- Then setup your server. I have my memo on the setup process at the end of this README. But it's just for my own case: I use a t2.nano instance with CentOS/RDHL Fedora on AWS. Make sure you make proper adjustments if you use a different setup.
+
+- Run the following commands
+
+```
+cd little-website
+npm i
+npm i pm2 -g
+npm run build
+pm2 start npm --name "website" -- start
 ```
 
-For detailed explanation on how things work, checkout the [Nuxt.js docs](https://github.com/nuxt/nuxt.js).
+- Finally, modify `static/projects.json` to have your own projects
 
-# New server setup (AWS EC2 CentOS/RDHL Fedora)
-sudo yum install git
+# My server's setup script
+
+```
+sudo yum install git -y
+
+# Add virtual memory
 sudo /bin/dd if=/dev/zero of=/var/swap.1 bs=1M count=2048
 sudo /sbin/mkswap /var/swap.1
 sudo chmod 600 /var/swap.1
 sudo /sbin/swapon /var/swap.1
+
+# Install NPM
 curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.31.0/install.sh | bash
 . /home/ec2-user/.bashrc
-nvm install 6.9.5
+nvm install 9.2.1
 
-cd little-website
-npm i
-npm i nuxt -g
-screen -S and then nuxt
-
+# Install nginx and https
+# Please know that the code below is specifically for CentOS/RDHL Fedora. The certbot doesn't have updated installation doc for this distribution, and this is what I figured out myself. In other distributions, I believe certbot has more integrated solution.
 sudo yum instal nginx
 edit /etc/nginx/nginx.conf to have my domain
 sudo chmod -R 777 /var/log/nginx/
-
 sudo wget https://dl.eff.org/certbot-auto
 sudo chmod a+x certbot-auto
 sudo mv certbot-auto /usr/bin
 sudo /usr/bin/certbot-auto --nginx
 
+# cronjob for updating https certificate
 sudo crontab -e : 15 3 * * * /usr/bin/certbot-auto renew --quiet
-
+```
 
