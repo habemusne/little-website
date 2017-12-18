@@ -19,7 +19,9 @@ cd little-website
 npm i
 npm i pm2 -g
 npm run build
-pm2 start npm --name "website" -- start
+
+# -s is to run spa mode. If you have concerns about browser incapability, you may want to remove this flag in order to use ssr. Keep in mind that pm2 is resource demanding. My t2.nano could not afford it so I opened up a screen and ran npm start -s instead. If you have a good machine you may use pm2 --- you can alleviate the worry of random failing of the running process
+pm2 start npm --name "website" -- start -s
 ```
 
 - Finally, modify `static/projects.json` to have your own projects
