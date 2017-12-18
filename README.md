@@ -30,7 +30,7 @@ npm run build
 pm2 start npm --name "website" -- start -s
 ```
 
-- Finally, modify `static/projects.json` to have your own projects
+- Finally, `cp static/projects_template.json static/projects.json`, and then modify `static/projects.json` to have your own projects
 
 # My server's setup script
 
