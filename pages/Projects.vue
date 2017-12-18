@@ -25,9 +25,6 @@
                   <el-col :span="$device.isMobileOrTablet? 18: 20" class="custom-collapse-header-text">
                     <div style="float:left">{{ project.human_name }}</div>
                     <div style="float:left; margin-left: 20px" v-show="$device.isDesktop" class="secondary-text">{{ project.short_desc }}</div>
-<!--                     <div style="float:left; margin-left: 20px">
-                      <el-tag v-for="(tag, j) in project.implicit_tags" :key="j" class="project-tag" :type="get_implicit_tag_color(tag)">{{ tag }}</el-tag>
-                    </div> -->
                   </el-col>
                 </el-row>
               </el-header>

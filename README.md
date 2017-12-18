@@ -2,7 +2,7 @@
 
 This is a project demo website builder. It specializes in demonstraing a software developer's past and current projects, and probably there's nothing else it can do.
 
-For a software developer, this is extremely easy to use --- what you need to do is to only modify `static/project.json`. The difficult part is on setting up the server.
+For a software developer, this is extremely easy to use --- what you need to do is to only modify `static/projects.json`. The difficult part is on setting up the server.
 
 Demo: https://habemusne.com
 
