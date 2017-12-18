@@ -1,4 +1,7 @@
 module.exports = {
+  css: [
+    '@/assets/variables.sass',
+  ],
   /*
   ** Headers of the page
   */
@@ -10,8 +13,14 @@ module.exports = {
       { hid: 'description', name: 'description', content: 'Nuxt.js project' }
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
-    ]
+      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+      { rel: 'stylesheet', href: 'vis.min.css' },
+    ],
+    script: [
+      { src: 'vis.min.js' },
+      { src: 'https://use.fontawesome.com/e9fbac4e72.js' },
+      { src: 'https://code.jquery.com/jquery-3.2.1.min.js', integrity: "sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=", crossorigin: "anonymous" },
+    ],
   },
   /*
   ** Customize the progress bar color
@@ -30,18 +39,20 @@ module.exports = {
           enforce: 'pre',
           test: /\.(js|vue)$/,
           loader: 'eslint-loader',
-          exclude: /(node_modules)/
+          exclude: /(node_modules)/,
         })
       }
     }
   },
   build: {
-    vendor: ['element-ui']
+    vendor: ['element-ui', 'vue-smoothscroll'],
   },
   plugins: [
     '~/plugins/element-ui',
+    '~/plugins/vue-smoothscroll',
   ],
   modules: [
     'bootstrap-vue/nuxt',
+    'nuxt-device-detect',
   ],
 }

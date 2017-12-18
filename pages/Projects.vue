@@ -1,82 +1,99 @@
 <template>
-<el-row>
-  <el-col :span="16">
+<b-row ref="hehe">
+  <b-col :sm="$device.isDesktop ? 8 : 12">
+    <h2>My Projects</h2>
     <div style="width: 100%; min-height: 1px">
-      <el-button type="danger" @click="show_timeline = !show_timeline">{{ `${show_timeline ? 'Hide' : 'Show'}` }} Timeline</el-button>
-      <br/><br/>
-      <el-card v-show="show_timeline">
-        <div ref="timeline"></div>
-      </el-card>
-      <el-card v-for="(project, i) in filtered_projects" :key="i" :id="project.name">
-        <el-container>
-          <el-header>{{ project.human_name }}: {{ project.short_desc }}</el-header>
-          <el-main>
-            <div class="project-content">
+      <div v-if="$device.isDesktop">
+        <el-button type="primary" @click="show_timeline = !show_timeline">{{ `${show_timeline ? 'Hide' : 'Show'}` }} Timeline</el-button>
+        <br/><br/>
+        <b-card v-show="show_timeline">
+          <div ref="timeline"></div>
+        </b-card>
+      </div>
+      <el-collapse v-model="active_collapses" @change="on_collapse_change">
+        <el-collapse-item :name="project.name" v-for="(project, i) in filtered_projects" :key="i">
+          <template slot="title">
+            <el-container :ref="project.name">
+              <el-header>
+                <el-row class="custom-collapse-header">
+                  <el-col :span="$device.isMobileOrTablet? 4: 2">
+                    <el-tooltip effect="dark" placement="top" v-for="(demo_type, j) in ['video', 'picture', 'website', 'github']" :key="j" v-if="project.demo_types.includes(demo_type)" :content="icon_info[demo_type].help">
+                      <i :class="icon_info[demo_type].icon" @click.prevent.stop aria-hidden="true"></i>
+                    </el-tooltip>
+                    <div style="display: hidden; min-height: 1px;"></div>
+                  </el-col>
+                  <el-col :span="$device.isMobileOrTablet? 18: 20" class="custom-collapse-header-text">
+                    <div style="float:left">{{ project.human_name }}</div>
+                    <div style="float:left; margin-left: 20px" v-show="$device.isDesktop" class="secondary-text">{{ project.short_desc }}</div>
+<!--                     <div style="float:left; margin-left: 20px">
+                      <el-tag v-for="(tag, j) in project.implicit_tags" :key="j" class="project-tag" :type="get_implicit_tag_color(tag)">{{ tag }}</el-tag>
+                    </div> -->
+                  </el-col>
+                </el-row>
+              </el-header>
+            </el-container>
+          </template>
+          <el-container>
+            <el-main>
+              <p class="secondary-text" v-if="$device.isMobileOrTablet">{{ project.short_desc }}</p>
               <p class="desc">{{ project.desc }}</p>
-              <div v-if="project.intro_type === 'youtube'">
-                <iframe width="560" height="315" :src="project.intro_content" frameborder="0" allowfullscreen></iframe>
+              <div v-html="project.intro_content"></div>
+              <hr style="width:20%z">
+              <div class="custom-footer secondary-text">
+                <table cellpadding="5">
+                  <tr>
+                    <td>At company</td>
+                    <td>{{ project.company }}</td>
+                  </tr>
+                  <tr>
+                    <td>Role</td>
+                    <td>{{ project.roles.join(' --> ') }}</td>
+                  </tr>
+                  <tr>
+                    <td>Supervised by Architech</td>
+                    <td>{{ project.supervised_by_architech ? 'Yes' : 'No' }}</td>
+                  </tr>
+                  <tr>
+                    <td>Features Responsible</td>
+                    <td><el-progress :percentage="project.percentage_feature_responsible"></el-progress></td>
+                  </tr>
+                  <tr>
+                    <td>Code Contribution</td>
+                    <td><el-progress :percentage="project.percentage_code_contribution"></el-progress></td>
+                  </tr>
+                  <tr>
+                    <td>Active Through</td>
+                    <td>{{ project.active_start  }} - {{ project.active_end }}</td>
+                  </tr>
+                  <tr>
+                    <td>Current Maintainer?</td>
+                    <td>{{ project.current_maintainer ? 'Yes': 'No' }}</td>
+                  </tr>
+                  <tr>
+                    <td>Funded?</td>
+                    <td>{{ project.funded ? 'Yes': 'No' }}</td>
+                  </tr>
+                  <tr>
+                    <td>Code Repository</td>
+                    <td v-if="project.code_repo.startsWith('http')">
+                      <a :href="project.code_repo" target="_blank">{{ project.code_repo }}</a>
+                    </td>
+                    <td v-else>{{ project.code_repo }}</td>
+                  </tr>
+                  <tr>
+                    <td>Updated</td>
+                    <td>{{ project.updated }}</td>
+                  </tr>
+                </table>
               </div>
-              <div v-else-if="project.intro_type === 'text'">
-                <div v-html="project.intro_content" class="intro-small"></div>
-              </div>
-              <div v-else-if="project.intro_type === 'intro_large'">
-                <div v-html="project.intro_content" class="intro-large"></div>
-              </div>
-            </div>
-          </el-main>
-          <el-footer>
-            <table cellpadding="5">
-              <tr>
-                <td>At company</td>
-                <td>{{ project.company }}</td>
-              </tr>
-              <tr>
-                <td>Role</td>
-                <td>{{ project.roles.join(' --> ') }}</td>
-              </tr>
-              <tr>
-                <td>Supervised by Architech</td>
-                <td>{{ project.supervised_by_architech ? 'Yes' : 'No' }}</td>
-              </tr>
-              <tr>
-                <td>Features Responsible</td>
-                <td><el-progress :percentage="project.percentage_feature_responsible"></el-progress></td>
-              </tr>
-              <tr>
-                <td>Code Contribution</td>
-                <td><el-progress :percentage="project.percentage_code_contribution"></el-progress></td>
-              </tr>
-              <tr>
-                <td>Active Through</td>
-                <td>{{ project.active_start  }} - {{ project.active_end }}</td>
-              </tr>
-              <tr>
-                <td>Current Maintainer?</td>
-                <td>{{ project.current_maintainer ? 'Yes': 'No' }}</td>
-              </tr>
-              <tr>
-                <td>Funded?</td>
-                <td>{{ project.funded ? 'Yes': 'No' }}</td>
-              </tr>
-              <tr>
-                <td>Code Repository</td>
-                <td v-if="project.code_repo.startsWith('http')">
-                  <a :href="project.code_repo" target="_blank">{{ project.code_repo }}</a>
-                </td>
-                <td v-else>{{ project.code_repo }}</td>
-              </tr>
-              <tr>
-                <td>Updated</td>
-                <td>{{ project.updated }}</td>
-              </tr>
-            </table>
-            <div><el-tag v-for="(tag, j) in project.tech_tags" :key="j" :type="tech_to_type ? tech_to_type[tag] : 'info'" class="project-tag">{{ tag }}</el-tag></div>
-          </el-footer>
-        </el-container>
-      </el-card>
+              <div><el-tag v-for="(tag, j) in project.tech_tags" :key="j" :type="tech_to_type ? tech_to_type[tag] : 'info'" class="project-tag">{{ tag }}</el-tag></div>
+            </el-main>
+          </el-container>
+        </el-collapse-item>
+      </el-collapse>
     </div>
-  </el-col>
-  <el-col :span="8">
+  </b-col>
+  <b-col :span="4" v-if="$device.isDesktop">
     <el-container>
       <el-main>
         <h1>Filters</h1>
@@ -111,38 +128,68 @@
         </el-collapse>
       </el-main>
     </el-container>
-  </el-col>
-</el-row>
+  </b-col>
+</b-row>
 </template>
 
 <script>
-import projects from '~/helpers/projects'
-import { uniq, flatten, intersection } from 'lodash'
+// import projects from '~/helpers/projects'
+import { uniq, flatten, intersection, slice } from 'lodash'
+import axios from 'axios'
+const fs = process.server ? require('fs-extra') : null
+const $ = process.browser ? require('jquery') : null
 
 export default {
-  mounted: function() {
-    const timeline_items = projects.map((project, id) => {
-      return {
-        id,
-        project,
-        start: project.active_start.split('/').join('-'),
-        end: project.active_end ? project.active_end.split('/').join('-') : null,
-        title: `${project.human_name}: ${project.short_desc}`,
-      }
-    })
-    const timeline_options = {
-      template: function(item, element, data) {
-        return `<a href="#${item.project.name}" class="timeline-item" style="text-decoration: none"><div>${item.project.human_name}</div></a>`
-      },
+  async asyncData() {
+    if (process.browser) {
+      const response = await axios.get('/projects.json')
+      return { projects: response.data }
+    } else {
+      const projects = JSON.parse(fs.readFileSync('static/projects.json', 'utf8'))
+      return { projects }
     }
-    new vis.Timeline(this.$refs.timeline, timeline_items, timeline_options);
+  },
+  mounted: function() {
+    // Load timeline
+    if (this.$device.isDesktop) {
+      const timeline_items = this.projects.map((project, id) => {
+        return {
+          id,
+          project,
+          start: project.active_start.split('/').join('-'),
+          end: project.active_end ? project.active_end.split('/').join('-') : null,
+          title: `${project.human_name}: ${project.short_desc}`,
+        }
+      })
+      const timeline_options = {
+        template: function(item, element, data) {
+          return `<a href="#${item.project.name}" class="timeline-item" style="text-decoration: none"><div>${item.project.human_name}</div></a>`
+        },
+      }
+      new vis.Timeline(this.$refs.timeline, timeline_items, timeline_options);
+    }
+
+    // Scroll
+    if (this.$route.hash) {
+      const target_project_name = this.$route.hash.slice(1)
+      this.filtered_projects.map(project => {
+        if (project.name === target_project_name) {
+          this.active_collapses.push(target_project_name)
+          const vm = this
+          setTimeout(function() {
+            console.log(vm.$refs[target_project_name][0])
+            vm.$SmoothScroll(vm.$refs[target_project_name][0].$el)
+          }, 500)
+        }
+      })
+    }
   },
   data() {
     return {
+      active_collapses: [],
       show_timeline: false,
       opened_filters: [],
       applied_filters: {
-        has_video_demo: '',
         tech_tags: [],
         companies: [],
         roles: [],
@@ -159,15 +206,15 @@ export default {
       tech_categories: {
         'Computer Networking & Security': {
           tech_tags: ['AWS EB', 'AWS SQS', 'AWS S3', 'AWS Lambda', 'AWS SimpleWorkflow', 'Aliyun', 'AWS VPC', 'jwt', 'AWS ECS', 'Docker', 'Vagrant', 'Wechat SDK', 'Passenger', 'pm2', 'nginx'],
-          type: 'danger',
+          type: 'default',
         },
         'Backend Framework & Database': {
           tech_tags: ['Django', 'NodeJS', 'Swagger', 'SQL Server', 'Postgres', 'Knex', 'Sequelize', 'Bookshelf', 'MongoDB', 'Ruby on Rails', 'ActiveRecord'],
-          type: 'default',
+          type: 'success',
         },
         'Frontend': {
           tech_tags: ['VueJS', 'ReactJS', 'GraphQL', 'Sass', 'Webpack', 'MeteorJS', 'Framework7', 'Selenium', 'AngularJS', 'JsPsych'],
-          type: 'warning',
+          type: 'info',
         },
         'Data Manipulation': {
           tech_tags: ['Pandas', 'Scrapy', 'Amazon Mechanical Turk', 'Numpy', 'Matlab'],
@@ -176,22 +223,65 @@ export default {
         'Language': {
           tech_tags: ['Python', 'Bash', 'Javascript', 'php'],
           type: 'info',
-        }
+        },
       },
-      projects,
+      icon_info: {
+        video: {
+          icon: 'fa fa-film',
+          help: 'Video available for demo',
+        },
+        picture: {
+          icon: 'fa fa-picture-o',
+          help: 'Pictures available for demo',
+        },
+        website: {
+          icon: 'fa fa-chrome',
+          help: 'Website available for demo',
+        },
+        github: {
+          icon: 'fa fa-file-code-o',
+          help: 'Source code is public',
+        },
+      },
     }
+  },
+  methods: {
+    generate_project_title(project) {
+      if (this.$device.isMobileOrTablet) {
+        return project.human_name
+      } else {
+        return `${project.human_name}: ${project.short_desc }`
+      }
+    },
+    get_implicit_tag_color(tag) {
+      if (tag === 'Cloud') {
+        return 'default'
+      } else if (tag === 'Web') {
+        return 'info'
+      } else if (tag === 'Database') {
+        return 'success'
+      } else {
+        return 'warning'
+      }
+    },
+    on_collapse_change(active_collapses) {
+      // Youtube size
+      this.$nextTick(function() {
+        if (this.$device.isMobileOrTablet) {
+          const allVideos = $("iframe")
+          allVideos.each(function() {
+            $(this)
+              .data('aspectRatio', this.height / this.width)
+              .removeAttr('height')
+              .removeAttr('width');
+          });
+        }
+      })
+    },
   },
   computed: {
     filter_items() {
       return [{
-        type: 'select',
-        multiple: false,
-        name: 'has_video_demo',
-        human_readable: 'Has Video Demo',
-        filter_function: project => {
-          return this.applied_filters.has_video_demo === (project.intro_type === 'youtube')
-        },
-      }, {
         type: 'select',
         multiple: true,
         name: 'tech_tags',
@@ -214,6 +304,10 @@ export default {
         multiple: true,
         name: 'roles',
         human_readable: 'Roles',
+        options: [
+          { label: 'Yes', value: true },
+          { label: 'No', value: false },
+        ],
         options: this.all_roles ? this.all_roles : [],
         filter_function: project => {
           return intersection(project.roles, this.applied_filters.roles).length > 0
@@ -318,45 +412,51 @@ export default {
 }
 </script>
 
-<style scoped>
-.project-tag {
-  margin-right: 0.3rem;
-}
-.el-footer {
-  height: auto !important;
-  line-height: 1.5rem;
-  color: #9E9E9E;
-  font-size: 0.9rem;
-}
-.el-header {
-  font-size: x-large;
-  font-weight: bold;
-  line-height: 60px;
-  height: auto !important;
-}
-.intro-large {
-  font-size: 30px;
-  font-weight: 100;
-}
-.intro-small {
+<style scoped lang="sass">
+@import '~assets/variables.sass'
 
-}
-.desc {
-  font-weight: 100;
-  font-style: italic;
-  margin-bottom: 2rem;
-}
-.el-input__inner {
-  width: auto !important;
-}
-.el-select {
-  width: 100%;
-}
-.el-slider {
-  width: 90%;
-  margin: auto;
-}
-.timeline-item {
-  font-size: 14px;
-}
+.project-tag
+  margin-right: 0.3rem
+
+.custom-footer
+  height: auto !important
+  line-height: 1.5rem
+
+.secondary-text
+  color: #9E9E9E
+  font-size: 0.9rem
+
+.custom-collapse-header
+  font-size: 0.9rem
+  i
+    margin-right: 0.3rem
+    color: #007bff
+  .custom-collapse-header-text
+    text-overflow: ellipsis
+    white-space: nowrap
+    overflow: hidden
+
+.intro-large
+  font-size: 30px
+  font-weight: 100
+
+.desc
+  font-weight: 100
+  font-style: italic
+  margin-bottom: 2rem
+  font-size: 0.9rem !important
+
+.el-input__inner
+  width: auto !important
+
+.el-select
+  width: 100%
+
+.el-slider
+  width: 90%
+  margin: auto
+
+.timeline-item
+  font-size: 0.9rem
+
 </style>
