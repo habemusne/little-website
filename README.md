@@ -8,15 +8,17 @@ Demo: https://habemusne.com
 
 # Usage
 
-- First of all, have your own domain and your server ready. In my case, I bought the domain from GoDaddy.com and then I use AWS Route53 to setup the routing. There are plenty of articles on how to do it so I will not mention the procedure here. For example you may visit [this article](https://blog.vizuri.com/setting-up-godaddy-and-route53-with-ghost-blogger) for the procedure.
+I personally use the AWS EC2 server. If you choose other server providers like DigitalOcean and Heroku, you may skip Step 1, Step 2, and Step 4.
 
-- Then setup your server. I have my memo on the setup process at the end of this README. But it's just for my own case: I use a t2.nano instance with CentOS/RDHL Fedora on AWS. Make sure you make proper adjustments if you use a different setup.
+- Step 1: First of all, have your own domain and your server ready. In my case, I bought the domain from GoDaddy.com and then I use AWS Route53 to setup the routing. There are plenty of articles on how to do it so I will not mention the procedure here. For example you may visit [this article](https://blog.vizuri.com/setting-up-godaddy-and-route53-with-ghost-blogger) for the procedure.
 
-- Run the following commands
+- Step 2: Then setup your server. I have my memo on the setup process at the end of this README. But it's just for my own case: I use a t2.small instance with ubuntu on AWS. Make sure you make proper adjustments if you use a different setup.
+
+- Step 3: Run the following commands
 
 ```
 cd little-website
-npm i
+npm i # this is very slow. you can use npm set progress=false to speed up
 npm i pm2 -g
 npm run build
 
@@ -30,12 +32,19 @@ npm run build
 pm2 start npm --name "website" -- start -s
 ```
 
+- Step 4:
+
+Make sure you can access your website through your server's IP address. Then run
+```
+sudo certbot --nginx -d yourdomain.com -d www.yourdomain.com
+```
+
 - Finally, `cp static/projects_template.json static/projects.json`, and then modify `static/projects.json` to have your own projects
 
 # My server's setup script
 
 ```
-sudo yum install git -y
+sudo apt-get install git -y
 
 # Add virtual memory
 sudo /bin/dd if=/dev/zero of=/var/swap.1 bs=1M count=2048
@@ -45,23 +54,32 @@ sudo /sbin/swapon /var/swap.1
 
 # Install NPM
 curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.31.0/install.sh | bash
-. /home/ec2-user/.bashrc
+. /home/ubuntu/.bashrc
 nvm install 9.2.1
 
 # Install nginx and https
-# Please know that the code below is specifically for CentOS/RDHL Fedora.
-# The certbot doesn't have updated installation doc for this distribution,
-#   and this is what I figured out myself.
-# In other distributions, I believe certbot has more integrated solution.
-sudo yum instal nginx
-edit /etc/nginx/nginx.conf to have my domain
-sudo chmod -R 777 /var/log/nginx/
-sudo wget https://dl.eff.org/certbot-auto
-sudo chmod a+x certbot-auto
-sudo mv certbot-auto /usr/bin
-sudo /usr/bin/certbot-auto --nginx
+# The following steps are from this article: https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-16-04
+sudo add-apt-repository ppa:certbot/certbot
+sudo apt-get update
+sudo apt-get install python-certbot-nginx
 
-# cronjob for updating https certificate
-sudo crontab -e : 15 3 * * * /usr/bin/certbot-auto renew --quiet
+# In the following step, please modify the file to contain the following lines:
+# server {
+#   ...
+#   server_name  yourdomain.com www.yourdomain.com;
+#   location / {
+#       proxy_pass http://127.0.0.1:3000;
+#   }
+#   ...
+# }
+sudo vim /etc/nginx/sites-available/default
+
+# And then check if your nginx file looks good. If it's not, please keep modifying the above file until it says ok
+sudo nginx -t
+
+sudo systemctl reload nginx
+sudo ufw allow 'Nginx Full'
+sudo ufw delete allow 'Nginx HTTP'
+sudo ufw allow 'OpenSSH'
+sudo ufw enable
 ```
-

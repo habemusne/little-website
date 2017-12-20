@@ -16,7 +16,7 @@
   "funded": true,
   "code_repo": "Not available",
   "updated": "2017/12/07",
-  "demo_types": ["video"],
+  "demo_types": ["video"]
 }, {
   "name": "project_name",
   "human_name": "Project Name",
@@ -35,7 +35,7 @@
   "funded": true,
   "code_repo": "Not available",
   "updated": "2017/12/07",
-  "demo_types": ["picture"],
+  "demo_types": ["picture"]
 }, {
   "name": "ai_master",
   "human_name": "AI Master Website",
@@ -54,7 +54,7 @@
   "funded": true,
   "code_repo": "Not available",
   "updated": "2017/12/07",
-  "demo_types": ["website"],
+  "demo_types": ["website"]
 }, {
   "name": "personal_website",
   "human_name": "This Website",
@@ -73,5 +73,5 @@
   "funded": false,
   "code_repo": "https://github.com/habemusne/little-website",
   "updated": "2017/12/07",
-  "demo_types": ["website", "github"],
+  "demo_types": ["website", "github"]
 }]
