@@ -47,8 +47,8 @@
                     <td>{{ project.roles.join(' --> ') }}</td>
                   </tr>
                   <tr>
-                    <td>Supervised by Architech</td>
-                    <td>{{ project.supervised_by_architech ? 'Yes' : 'No' }}</td>
+                    <td>Supervised by Architect</td>
+                    <td>{{ project.supervised_by_architect ? 'Yes' : 'No' }}</td>
                   </tr>
                   <tr>
                     <td>Features Responsible</td>
@@ -190,7 +190,7 @@ export default {
         tech_tags: [],
         companies: [],
         roles: [],
-        supervised_by_architech: '',
+        supervised_by_architect: '',
         current_maintainer: '',
         funded: '',
         percentage_feature_responsible: [0, 100],
@@ -312,14 +312,14 @@ export default {
       }, {
         type: 'select',
         multiple: false,
-        name: 'supervised_by_architech',
-        human_readable: 'Supervised by Architech',
+        name: 'supervised_by_architect',
+        human_readable: 'Supervised by Architect',
         options: [
           { label: 'Yes', value: true },
           { label: 'No', value: false },
         ],
         filter_function: project => {
-          return this.applied_filters.supervised_by_architech === project.supervised_by_architech
+          return this.applied_filters.supervised_by_architect === project.supervised_by_architect
         },
       }, {
         type: 'select',
