@@ -39,7 +39,9 @@ Make sure you can access your website through your server's IP address. Then run
 sudo certbot --nginx -d yourdomain.com -d www.yourdomain.com
 ```
 
-- Finally, `cp static/projects_template.json static/projects.json`, and then modify `static/projects.json` to have your own projects
+- Step 5:
+
+Finally, `cp static/projects_template.json static/projects.json`, and then modify `static/projects.json` to have your own projects
 
 # My server's setup script
 
