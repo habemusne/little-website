@@ -4,7 +4,7 @@ This is a project demo website builder. It specializes in demonstraing a softwar
 
 For a software developer, this is extremely easy to use --- what you need to do is to only modify `static/projects.json`. The difficult part is on setting up the server.
 
-Demo: https://habemusne.com
+Demo: https://habemusne.com/projects
 
 # Usage
 
