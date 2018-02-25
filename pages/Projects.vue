@@ -1,7 +1,41 @@
 <template>
 <b-row ref="hehe">
-  <b-col :sm="$device.isDesktop ? 8 : 12">
-    <h2>My Projects</h2>
+  <el-dialog title="Filters" :visible.sync="show_filter_panel" :width="$device.isDesktop ? '80%' : '95%'">
+    <el-collapse v-model="opened_filters">
+      <el-collapse-item v-for="(item, i) in filter_items" :key="i" :title="item.human_readable" :name="item.name">
+        <el-select v-if="item.type === 'select'" v-model="applied_filters[item.name]" :multiple="item.multiple" filterable reserve-keyword clearable placeholder="Please select">
+          <el-option v-for="(option, i) in item.options" :key="i" :label="option.label" :value="option.value">
+          </el-option>
+        </el-select>
+        <div v-if="item.type === 'date_range'">
+<!--               <el-date-picker
+            v-model="applied_filters[item.name].start"
+            type="daterange"
+            align="right"
+            unlink-panels
+            range-separator="To"
+            start-placeholder="Start date"
+            end-placeholder="End date"
+            :picker-options="pickerOptions2">
+          </el-date-picker>
+-->            </div>
+        <div v-if="item.type === 'progress'">
+          <el-slider
+            v-model="applied_filters[item.name]"
+            range
+            show-stops
+            :max="100">
+          </el-slider>
+          <p>{{ applied_filters[item.name][0] }}%-{{ applied_filters[item.name][1] }}%</p>
+        </div>
+      </el-collapse-item>
+    </el-collapse>
+  </el-dialog>
+  <b-col :sm="12">
+    <div class="page-title">
+      <h2>My Projects</h2>
+      <div><i class="fa fa-filter fa-lg" @click="show_filter_panel = !show_filter_panel"></i></div>
+    </div>
     <div style="width: 100%; min-height: 1px">
       <div v-if="$device.isDesktop">
         <el-button type="primary" @click="show_timeline = !show_timeline">{{ `${show_timeline ? 'Hide' : 'Show'}` }} Timeline</el-button>
@@ -10,133 +44,21 @@
           <div ref="timeline"></div>
         </b-card>
       </div>
-      <el-collapse v-model="active_collapses" @change="on_collapse_change">
-        <el-collapse-item :name="project.name" v-for="(project, i) in filtered_projects" :key="i">
-          <template slot="title">
-            <el-container :ref="project.name">
-              <el-header>
-                <el-row class="custom-collapse-header">
-                  <el-col :span="$device.isMobileOrTablet? 4: 2">
-                    <el-tooltip effect="dark" placement="top" v-for="(demo_type, j) in ['video', 'picture', 'website', 'github']" :key="j" v-if="project.demo_types.includes(demo_type)" :content="icon_info[demo_type].help">
-                      <i :class="icon_info[demo_type].icon" @click.prevent.stop aria-hidden="true"></i>
-                    </el-tooltip>
-                    <div style="display: hidden; min-height: 1px;"></div>
-                  </el-col>
-                  <el-col :span="$device.isMobileOrTablet? 18: 20" class="custom-collapse-header-text">
-                    <div style="float:left">{{ project.human_name }}</div>
-                    <div style="float:left; margin-left: 20px" v-show="$device.isDesktop" class="secondary-text">{{ project.short_desc }}</div>
-                  </el-col>
-                </el-row>
-              </el-header>
-            </el-container>
-          </template>
-          <el-container>
-            <el-main>
-              <p class="secondary-text" v-if="$device.isMobileOrTablet">{{ project.short_desc }}</p>
-              <p class="desc">{{ project.desc }}</p>
-              <div v-html="project.intro_content"></div>
-              <hr style="width:20%z">
-              <div class="custom-footer secondary-text">
-                <table cellpadding="5">
-                  <tr>
-                    <td>At company</td>
-                    <td>{{ project.company }}</td>
-                  </tr>
-                  <tr>
-                    <td>Role</td>
-                    <td>{{ project.roles.join(' --> ') }}</td>
-                  </tr>
-                  <tr>
-                    <td>Supervised by Architect</td>
-                    <td>{{ project.supervised_by_architect ? 'Yes' : 'No' }}</td>
-                  </tr>
-                  <tr>
-                    <td>Features Responsible</td>
-                    <td><el-progress :percentage="project.percentage_feature_responsible"></el-progress></td>
-                  </tr>
-                  <tr>
-                    <td>Code Contribution</td>
-                    <td><el-progress :percentage="project.percentage_code_contribution"></el-progress></td>
-                  </tr>
-                  <tr>
-                    <td>Active Through</td>
-                    <td>{{ project.active_start  }} - {{ project.active_end }}</td>
-                  </tr>
-                  <tr>
-                    <td>Current Maintainer?</td>
-                    <td>{{ project.current_maintainer ? 'Yes': 'No' }}</td>
-                  </tr>
-                  <tr>
-                    <td>Funded?</td>
-                    <td>{{ project.funded ? 'Yes': 'No' }}</td>
-                  </tr>
-                  <tr>
-                    <td>Code Repository</td>
-                    <td v-if="project.code_repo.startsWith('http')">
-                      <a :href="project.code_repo" target="_blank">{{ project.code_repo }}</a>
-                    </td>
-                    <td v-else>{{ project.code_repo }}</td>
-                  </tr>
-                  <tr>
-                    <td>Updated</td>
-                    <td>{{ project.updated }}</td>
-                  </tr>
-                </table>
-              </div>
-              <div><el-tag v-for="(tag, j) in project.tech_tags" :key="j" :type="tech_to_type ? tech_to_type[tag] : 'info'" class="project-tag">{{ tag }}</el-tag></div>
-            </el-main>
-          </el-container>
-        </el-collapse-item>
-      </el-collapse>
+      <list :active_collapses="active_collapses" :filtered_projects="filtered_projects" :tech_categories="tech_categories"></list>
     </div>
-  </b-col>
-  <b-col :span="4" v-if="$device.isDesktop">
-    <el-container>
-      <el-main>
-        <h1>Filters</h1>
-        <el-collapse v-model="opened_filters">
-          <el-collapse-item v-for="(item, i) in filter_items" :key="i" :title="item.human_readable" :name="item.name">
-            <el-select v-if="item.type === 'select'" v-model="applied_filters[item.name]" :multiple="item.multiple" filterable reserve-keyword clearable placeholder="Please select">
-              <el-option v-for="(option, i) in item.options" :key="i" :label="option.label" :value="option.value">
-              </el-option>
-            </el-select>
-            <div v-if="item.type === 'date_range'">
-<!--               <el-date-picker
-                v-model="applied_filters[item.name].start"
-                type="daterange"
-                align="right"
-                unlink-panels
-                range-separator="To"
-                start-placeholder="Start date"
-                end-placeholder="End date"
-                :picker-options="pickerOptions2">
-              </el-date-picker>
- -->            </div>
-            <div v-if="item.type === 'progress'">
-              <el-slider
-                v-model="applied_filters[item.name]"
-                range
-                show-stops
-                :max="100">
-              </el-slider>
-              <p>{{ applied_filters[item.name][0] }}%-{{ applied_filters[item.name][1] }}%</p>
-            </div>
-          </el-collapse-item>
-        </el-collapse>
-      </el-main>
-    </el-container>
   </b-col>
 </b-row>
 </template>
 
 <script>
 // import projects from '~/helpers/projects'
+import List from '~/components/List'
 import { uniq, flatten, intersection, slice } from 'lodash'
 import axios from 'axios'
 const fs = process.server ? require('fs-extra') : null
-const $ = process.browser ? require('jquery') : null
 
 export default {
+  components: { List },
   async asyncData() {
     if (process.browser) {
       const response = await axios.get('/projects.json')
@@ -183,6 +105,7 @@ export default {
   },
   data() {
     return {
+      show_filter_panel: false,
       active_collapses: [],
       show_timeline: false,
       opened_filters: [],
@@ -222,24 +145,6 @@ export default {
           type: 'info',
         },
       },
-      icon_info: {
-        video: {
-          icon: 'fa fa-film',
-          help: 'Video available for demo',
-        },
-        picture: {
-          icon: 'fa fa-picture-o',
-          help: 'Pictures available for demo',
-        },
-        website: {
-          icon: 'fa fa-chrome',
-          help: 'Website available for demo',
-        },
-        github: {
-          icon: 'fa fa-file-code-o',
-          help: 'Source code is public',
-        },
-      },
     }
   },
   methods: {
@@ -260,20 +165,6 @@ export default {
       } else {
         return 'warning'
       }
-    },
-    on_collapse_change(active_collapses) {
-      // Youtube size
-      this.$nextTick(function() {
-        if (this.$device.isMobileOrTablet) {
-          const allVideos = $("iframe")
-          allVideos.each(function() {
-            $(this)
-              .data('aspectRatio', this.height / this.width)
-              .removeAttr('height')
-              .removeAttr('width');
-          });
-        }
-      })
     },
   },
   computed: {
@@ -361,15 +252,6 @@ export default {
         },
       }]
     },
-    tech_to_type() {
-      let dict = {}
-      for (var category in this.tech_categories) {
-        for (var i in this.tech_categories[category].tech_tags) {
-          dict[this.tech_categories[category].tech_tags[i]] = this.tech_categories[category].type
-        }
-      }
-      return dict
-    },
     all_tech_tags() {
       const items = uniq(flatten(Object.keys(this.tech_categories).map(key => {
         return this.tech_categories[key].tech_tags
@@ -412,37 +294,6 @@ export default {
 <style scoped lang="sass">
 @import '~assets/variables.sass'
 
-.project-tag
-  margin-right: 0.3rem
-
-.custom-footer
-  height: auto !important
-  line-height: 1.5rem
-
-.secondary-text
-  color: #9E9E9E
-  font-size: 0.9rem
-
-.custom-collapse-header
-  font-size: 0.9rem
-  i
-    margin-right: 0.3rem
-    color: #007bff
-  .custom-collapse-header-text
-    text-overflow: ellipsis
-    white-space: nowrap
-    overflow: hidden
-
-.intro-large
-  font-size: 30px
-  font-weight: 100
-
-.desc
-  font-weight: 100
-  font-style: italic
-  margin-bottom: 2rem
-  font-size: 0.9rem !important
-
 .el-input__inner
   width: auto !important
 
@@ -455,5 +306,17 @@ export default {
 
 .timeline-item
   font-size: 0.9rem
+
+.page-title
+  height: 60px
+  h2
+    float: left
+  div
+    float: right
+    width: 50%
+    height: 100%
+    padding-top: 10px;
+    i
+      float: right
 
 </style>
