@@ -1,4 +1,12 @@
+const bodyParser = require('body-parser')
+const cors = require('cors')
+
 module.exports = {
+  serverMiddleware: [
+    bodyParser.json(),
+    cors(),
+    '~/server',
+  ],
   css: [
     '@/assets/variables.sass',
   ],
