@@ -11,3 +11,6 @@ npm-debug.log
 dist
 
 static/projects.json
+
+.env
+venv

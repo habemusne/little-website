@@ -315,7 +315,7 @@ export default {
     float: right
     width: 50%
     height: 100%
-    padding-top: 10px;
+    padding-top: 14px;
     i
       float: right
 
